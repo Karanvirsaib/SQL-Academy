@@ -1,0 +1,2 @@
+- [Execution plan](./memory/plan.md) — monolithic SQLAnalyst.tsx sliced into lib/data.ts + utils/security.ts + components/
+- [Cloud/AI DE course plan](COURSE_PLAN.md) — 5 phases, checklist UI built, saved to localStorage via safeStorage

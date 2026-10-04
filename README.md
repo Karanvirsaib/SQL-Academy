@@ -1,6 +1,6 @@
-# SQL Analyst Academy V8 Academy
+# SQL Analyst Academy · Cloud / AI Data Engineering Career Track
 
-A browser-based, hands-on SQL learning platform for Data Analysts and Senior Data Analysts.
+A browser-based, hands-on platform pivoted into a full AI/cloud data engineering course (start → expert, job-ready at 3yr DE level). Includes Databricks, SQL, Python, cloud warehouses, Spark/Delta Lake, orchestration (Airflow/dbt), data quality, monitoring, security, 3 portfolio projects, interview prep, and a tickable career-plan checklist saved locally.
 
 ## Included
 - 34-lesson beginner → advanced SQL curriculum
