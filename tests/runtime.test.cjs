@@ -110,7 +110,8 @@ test('all classrooms and roadmap render with no automatically completed lessons'
   const videoComponent=load('components/VideoReferences.tsx',{require:name=>name==='react/jsx-runtime'?require(name):videos});
   const examples=load('lib/topic-examples.ts');
   const explained=load('components/ExplainedExample.tsx',{require:name=>require(name)});
-  const resolve=name=>name==='react'?React:name==='react/jsx-runtime'?require(name):name==='../lib/curriculum'?curriculum:name==='../lib/learning-videos'?videos:name==='./VideoReferences'?videoComponent:name==='../lib/topic-examples'?examples:name==='./ExplainedExample'?explained:plan;
+  const paths=load('lib/site-path.ts',{process:{env:{}}});
+  const resolve=name=>name==='react'?React:name==='react/jsx-runtime'?require(name):name==='../lib/site-path'?paths:name==='../lib/curriculum'?curriculum:name==='../lib/learning-videos'?videos:name==='./VideoReferences'?videoComponent:name==='../lib/topic-examples'?examples:name==='./ExplainedExample'?explained:plan;
   const {LearningZone}=load('components/LearningZone.tsx',{require:resolve});
   for(const topic of curriculum.topics) {
     const html=renderToStaticMarkup(React.createElement(LearningZone,{topicId:topic.id,onSelect(){},progress:curriculum.emptyProgress,onProgress(){},onSQL(){},onInterview(){}}));
@@ -187,7 +188,8 @@ test('all five studios and 32 lessons render with honest execution labels', () =
   const catalog=load('lib/studios.ts',{require:name=>name==='./curriculum'?curriculum:examples});
   const videos=load('lib/learning-videos.ts');
   const explained=load('components/ExplainedExample.tsx',{require});
-  const runner=load('components/PythonRunner.tsx',{require});
+  const paths=load('lib/site-path.ts',{process:{env:{}}});
+  const runner=load('components/PythonRunner.tsx',{require:name=>name==='../lib/site-path'?paths:require(name)});
   const videoComponent=load('components/VideoReferences.tsx',{require:name=>name==='react/jsx-runtime'?require(name):videos});
   const security=load('utils/security.ts');
   const resolve=name=>({'../lib/studios':catalog,'../lib/curriculum':curriculum,'../utils/security':security,'./ExplainedExample':explained,'./PythonRunner':runner,'./VideoReferences':videoComponent,'../lib/learning-videos':videos}[name]||require(name));
@@ -215,6 +217,13 @@ test('all five studios and 32 lessons render with honest execution labels', () =
   assert.equal(catalog.lessonExtension(catalog.studios[0].lessons[0]),'py');
   assert.equal(catalog.lessonExtension(catalog.studios.find(s=>s.id==='config').lessons[0]),'json');
   assert.equal(catalog.lessonExtension(catalog.studios.find(s=>s.id==='dbt').lessons[0]),'sql');
+});
+
+test('public worker and lab paths support both localhost and project Pages', () => {
+  for(const prefix of ['', '/SQL-Academy']){
+    const {assetPath}=load('lib/site-path.ts',{process:{env:{NEXT_PUBLIC_BASE_PATH:prefix}}});
+    for(const file of ['/python-worker.js','/labs/orders.csv','/labs/batch_pipeline.py','/labs/stream_replay.py'])assert.equal(assetPath(file),prefix+file);
+  }
 });
 
 test('Python worker handles packages, output, errors, bounds, and cleans its globals', async () => {

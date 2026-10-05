@@ -1,5 +1,9 @@
 # SQL Analyst Academy — Cloud / AI Data Engineering Career Track
 
+Live website: **https://karanvirsaib.github.io/SQL-Academy/**
+
+GitHub Actions tests and exports the site, then deploys it to GitHub Pages after each push to `main`. The Pages build uses `/SQL-Academy` as its base path, including worker and lab URLs. Local development keeps the root path. Progress is stored in each browser/origin; use the learning backup and studio exports to transfer local records to the hosted site.
+
 A browser-based data engineering learning roadmap with 24 taught checklist topics and 32 SQL lessons. Every explanation section includes a small example, a breakdown of what each part does, and an expected result (72 examples across the roadmap). All 32 SQL lessons also explain their runnable query and expected result shape. Each roadmap topic includes a worked example, a practical task, review criteria, a knowledge check, and official references. Browser SQL runs in DuckDB; Python/Spark/cloud labs require the stated local or external environment. This is study and project practice, not a guarantee of employment, expertise, or years of experience.
 
 ## What's inside (24-topic curriculum)

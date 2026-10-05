@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { assetPath } from '../lib/site-path';
 
 export function PythonRunner({code}:{code:string}) {
   const worker=useRef<Worker|null>(null);
@@ -14,7 +15,7 @@ export function PythonRunner({code}:{code:string}) {
   function run(){
     dispose();setOutput('');setError('');setLastCode(code);setBusy(true);setStatus('Loading Python and imported packages…');
     try {
-      const active=new Worker('/python-worker.js');worker.current=active;
+      const active=new Worker(assetPath('/python-worker.js'));worker.current=active;
       const deadline=(ms:number,message:string)=>{if(timer.current)clearTimeout(timer.current);timer.current=setTimeout(()=>{dispose();setBusy(false);setStatus('Timed out');setError(message);},ms);};
       deadline(150000,'Python/package loading timed out. Check your connection and try Run again.');
       active.onmessage=({data})=>{
