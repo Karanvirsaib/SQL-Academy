@@ -24,9 +24,12 @@ export function safeStorageGet<T>(key: string, fallback: T): T {
     const item = localStorage.getItem(key);
     if (!item) return fallback;
     const parsed = JSON.parse(item);
-    if (parsed !== null && typeof parsed === 'object' && Array.isArray(fallback) && !Array.isArray(parsed)) {
-       return fallback;
+    if (Array.isArray(fallback)) return (Array.isArray(parsed) ? parsed : fallback) as T;
+    if (typeof fallback === 'number') {
+      const value = typeof parsed === 'number' ? parsed : typeof parsed === 'string' && parsed.trim() ? Number(parsed) : NaN;
+      return (Number.isFinite(value) && value >= 0 ? value : fallback) as T;
     }
+    if (fallback !== null && typeof parsed !== typeof fallback) return fallback;
     return parsed as T;
   } catch (e) {
     console.error(`Error parsing localStorage key ${key}`, e);

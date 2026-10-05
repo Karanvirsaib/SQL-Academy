@@ -54,7 +54,16 @@ export const PLAN_MODULES: Module[] = [
 ];
 
 export function loadPlan(): Module[] {
-  return safeStorageGet<Module[]>("plan", PLAN_MODULES);
+  return mergePlan(safeStorageGet<unknown[]>("plan", []));
+}
+
+export function mergePlan(saved: unknown): Module[] {
+  const done = new Set<number>();
+  if (Array.isArray(saved)) for (const module of saved) {
+    if (!module || typeof module !== 'object' || !Array.isArray(module.items)) continue;
+    for (const item of module.items) if (item && Number.isInteger(item.id) && item.done === true) done.add(item.id);
+  }
+  return PLAN_MODULES.map(m => ({...m, items:m.items.map(i=>({...i,done:done.has(i.id)}))}));
 }
 
 export function savePlan(modules: Module[]): void {

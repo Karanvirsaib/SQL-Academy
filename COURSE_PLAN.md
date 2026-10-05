@@ -1,11 +1,15 @@
-# Cloud / AI Data Engineering — Start to Job-Ready (3yr DE)
+# Data Engineering — Guided Learning and Portfolio Practice
 Plan doc in D:\sql_academy\sql-analyst-v7. Tick boxes as done.
 
 ## Scope
 Pivot existing SQL Analyst site into full AI/cloud data engineering career track.
 Includes: Databricks, SQL, Python, cloud (AWS/GCP/Azure basics), warehouses, Spark/Delta Lake,
 orchestration (Airflow/dbt), monitoring, interviewing, portfolio projects.
-End goal: job-ready data engineering (3yr experience equivalency).
+End goal: explain core engineering decisions and build reproducible portfolio evidence. Course study is not equivalent to professional years of experience.
+
+All 24 checklist items now open taught topics in Learning Zone. Each topic has three explanations, a worked example, a practical task, review criteria, a knowledge check, and official references. SQL Studio adds 32 runnable commerce examples. Local Python and external cloud/Spark/dbt labs clearly state their execution environment; the browser runs DuckDB SQL only.
+
+Study and task completion are self-reported. Knowledge checks assess individual questions; they do not establish professional mastery. Learning notes, quiz results, and roadmap progress persist in this browser and can be exported/restored. Existing checklist checkmarks merge onto current topic content by stable numeric ID.
 
 ## Phase checklist
 

@@ -13,5 +13,5 @@ if not exist node_modules (
 )
 echo.
 echo Starting SQL Analyst Academy...
-call npm run dev
+call npm run dev -- -p 3007
 pause

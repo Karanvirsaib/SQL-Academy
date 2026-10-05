@@ -1,78 +1,11 @@
-import { useState } from "react";
-import { Module } from "../types";
-import { loadPlan, savePlan } from "../lib/plan";
-import { ModuleCard } from "./ModuleCard";
+import { LearningProgress, topics } from '../lib/curriculum';
+import { Module } from '../types';
 
-export function Checklist() {
-  const [modules, setModules] = useState<Module[]>(loadPlan());
-
-  const update = (modId: string, itemId: number) => {
-    const next = modules.map((m) =>
-      m.id === modId
-        ? { ...m, items: m.items.map((it) => (it.id === itemId ? { ...it, done: !it.done } : it)) }
-        : m
-    );
-    setModules(next);
-    savePlan(next);
-  };
-
-  const totalDone = modules.reduce((s, m) => s + m.items.filter((i) => i.done).length, 0);
-  const totalItems = modules.reduce((s, m) => s + m.items.length, 0);
-  const overallPct = totalItems ? Math.round((totalDone / totalItems) * 100) : 0;
-
-  return (
-    <>
-      <div className="section-head">
-        <div>
-          <h2>Cloud / AI Data Engineering — Course Plan</h2>
-          <span>Start to expert. Tick as you complete. Nothing left out.</span>
-        </div>
-        <span>5 phases · {totalDone}/{totalItems} done</span>
-      </div>
-
-      <div className="mastery-hero card" style={{ marginBottom: 12 }}>
-        <div>
-          <div className="eyebrow">COURSE PROGRESS</div>
-          <h1>{overallPct}%</h1>
-          <p>Based on checked items across foundations, cloud, pipeline, projects, interview.</p>
-        </div>
-        <div className="readiness-ring"><span>{totalDone}</span><small>items</small></div>
-      </div>
-
-      <div className="mastery-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}>
-        {modules.map((m) => (
-          <ModuleCard key={m.id} m={m} completed={m.items.filter((i) => i.done).length} />
-        ))}
-      </div>
-
-      <div style={{ marginTop: 16 }}>
-        <h3 style={{ marginBottom: 6 }}>Checklist — tick to save</h3>
-        {modules.map((m) => (
-          <div key={m.id} className="card card-pad" style={{ marginBottom: 8 }}>
-            <div className="panel-head"><b><span style={{ marginRight: 6 }}>{m.icon}</span>{m.title}</b></div>
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 6 }}>
-              {m.items.map((it) => (
-                <button
-                  key={it.id}
-                  className="btn"
-                  style={{
-                    background: it.done ? "var(--primary)" : "var(--surface)",
-                    color: it.done ? "#fff" : "inherit",
-                    border: "1px solid var(--border)",
-                    padding: "6px 10px",
-                    borderRadius: 8,
-                    fontSize: 12,
-                  }}
-                  onClick={() => update(m.id, it.id)}
-                  aria-pressed={it.done}
-                >
-                  {it.done ? "✓" : "○"} {it.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    </>
-  );
+export function Checklist({modules,progress,onOpen,onToggle}:{modules:Module[];progress:LearningProgress;onOpen:(id:number)=>void;onToggle:(id:number)=>void}) {
+  const complete=modules.flatMap(m=>m.items).filter(i=>i.done).length;
+  return <>
+    <div className="section-head"><div><h2>Your data engineering roadmap</h2><span>24 topics · learn, check your understanding, then build evidence</span></div><span>{complete}/24 self-reported complete</span></div>
+    <div className="card card-pad roadmap-intro"><h3>Every checklist topic has a classroom</h3><p>Open a topic for explanations, a worked example, a practical task, and a knowledge check. Your checkmarks record your own completion; quizzes record understanding checks. Cloud and local labs state their requirements before you begin.</p><button className="btn primary" onClick={()=>onOpen(modules.flatMap(m=>m.items).find(i=>!i.done)?.id||1)}>Continue learning →</button></div>
+    {modules.map(m=><section key={m.id} className="roadmap-phase"><div className="section-head"><h2>{m.icon} {m.title}</h2><span>{m.items.filter(i=>i.done).length}/{m.items.length} complete</span></div><p>{m.desc}</p><div className="curriculum-grid">{m.items.map(item=>{const topic=topics.find(t=>t.id===item.id)!;return <div className="card card-pad topic-card" key={item.id}><div className="eyebrow">TOPIC {item.id} · {progress.quizzes.includes(item.id)?'KNOWLEDGE CHECK PASSED':'READY TO LEARN'}</div><h3>{topic.title}</h3><p>{topic.objective}</p><small>{topic.environment}</small><div className="actions"><button className="btn primary" onClick={()=>onOpen(item.id)}>Learn this topic →</button><button className="btn" aria-pressed={item.done} onClick={()=>onToggle(item.id)}>{item.done?'✓ Complete':'Mark complete'}</button></div></div>})}</div></section>)}
+  </>;
 }

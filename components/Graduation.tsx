@@ -2,6 +2,7 @@ import { interviews } from "../lib/data";
 
 export function Graduation({
   lessons,
+  lessonsDone,
   completed,
   exercises,
   projects,
@@ -13,6 +14,7 @@ export function Graduation({
   onContinue
 }: {
   lessons: number;
+  lessonsDone: number;
   completed: number;
   exercises: number;
   projects: number;
@@ -24,10 +26,10 @@ export function Graduation({
   onContinue: () => void;
 }) {
   const requirements = [
-    ['Course lessons', lessons, lessons],
+    ['SQL lessons · self-reported', lessonsDone, lessons],
     ['SQL challenges', completed, Math.min(exercises, 8)],
-    ['Analyst projects', projectDone, Math.min(projects, 2)],
-    ['Interview assessment', interviewDone, Math.min(5, interviews.length)]
+    ['Analyst project submissions', projectDone, Math.min(projects, 2)],
+    ['Interview practice submissions', interviewDone, Math.min(5, interviews.length)]
   ];
   const earned = requirements.filter(([, v, t]) => (v as number) >= (t as number)).length;
   const ready = earned === requirements.length;
@@ -45,8 +47,8 @@ export function Graduation({
           <h1>{ready ? 'Certificate of Completion' : 'Analyst Progress Record'}</h1>
           <p className="certificate-lead">
             {ready
-              ? 'This certifies that the learner has completed the SQL Analyst Academy curriculum and demonstrated practical SQL analysis skills.'
-              : 'You are building toward a practical SQL Analyst certification. Complete the checklist below to unlock the completion certificate.'}
+              ? 'This local completion record combines self-reported SQL lesson study with the academy SQL challenges, analyst projects, and interview practice submissions. It is not an accredited certification or a data engineering assessment.'
+              : 'Complete the SQL track requirements below to unlock a local completion record. The broader data engineering roadmap has separate progress in the Learning Zone.'}
           </p>
           <div className="certificate-stats">
             <div><b>{xp}</b><span>XP earned</span></div>

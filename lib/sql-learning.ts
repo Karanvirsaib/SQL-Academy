@@ -1,0 +1,37 @@
+// Explicit links only: a lesson without a matching challenge gets its own runnable example.
+export const sqlActivities: Record<string,number> = {WHERE:1,ORDER:1,CASE:4,COUNT:2,GROUP:2,HAVING:2,JOIN:6,LEFT:10,CTE:3,ROW:3,RANK:3,SEGMENT:4,KPI:8};
+
+export const sqlExamples: Record<string,string> = {
+ SELECT:'SELECT customer_id, name FROM customers;',
+ WHERE:"SELECT customer_id, name FROM customers WHERE city = 'Delhi';",
+ ORDER:'SELECT customer_id, name, lifetime_value FROM customers ORDER BY lifetime_value DESC, customer_id;',
+ DISTINCT:'SELECT DISTINCT city FROM customers ORDER BY city;',
+ NULL:'SELECT customer_id, COALESCE(lifetime_value, 0) AS reported_value FROM customers;',
+ CASE:"SELECT name, CASE WHEN lifetime_value >= 50000 THEN 'VIP' ELSE 'Core' END AS segment FROM customers;",
+ COUNT:'SELECT COUNT(*) AS customers, COUNT(lifetime_value) AS known_values, AVG(lifetime_value) AS avg_ltv FROM customers;',
+ GROUP:'SELECT city, COUNT(*) AS customers FROM customers GROUP BY city ORDER BY city;',
+ HAVING:'SELECT c.city, SUM(o.amount) AS revenue FROM orders o JOIN customers c USING (customer_id) GROUP BY c.city HAVING SUM(o.amount) > 30000;',
+ JOIN:'SELECT c.customer_id, c.name, o.order_id, o.amount FROM customers c JOIN orders o USING (customer_id);',
+ LEFT:'SELECT c.customer_id, c.name FROM customers c LEFT JOIN orders o USING (customer_id) WHERE o.order_id IS NULL;',
+ MULTI:'SELECT o.order_id, c.name, p.category FROM orders o JOIN customers c USING (customer_id) JOIN products p USING (product_id);',
+ SUBQUERY:'SELECT name FROM customers WHERE customer_id IN (SELECT customer_id FROM orders);',
+ CTE:'WITH revenue AS (SELECT customer_id, SUM(amount) AS total FROM orders GROUP BY customer_id) SELECT * FROM revenue ORDER BY total DESC;',
+ UNION:"SELECT customer_id, 'customer' AS source FROM customers UNION ALL SELECT customer_id, 'order' AS source FROM orders;",
+ EXISTS:'SELECT c.name FROM customers c WHERE EXISTS (SELECT 1 FROM orders o WHERE o.customer_id = c.customer_id);',
+ DATES:"SELECT DATE_TRUNC('month', order_date) AS month, SUM(amount) AS revenue FROM orders GROUP BY 1 ORDER BY 1;",
+ ROW:'SELECT customer_id, order_id, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date, order_id) AS purchase_no FROM orders;',
+ RANK:'SELECT name, lifetime_value, RANK() OVER (ORDER BY lifetime_value DESC) AS rnk, DENSE_RANK() OVER (ORDER BY lifetime_value DESC) AS dense_rnk FROM customers;',
+ LAG:"WITH monthly AS (SELECT DATE_TRUNC('month', order_date) AS month, SUM(amount) AS revenue FROM orders GROUP BY 1) SELECT month, revenue, LAG(revenue) OVER (ORDER BY month) AS previous_observed_month FROM monthly ORDER BY month;",
+ RUNNING:'SELECT order_date, order_id, amount, SUM(amount) OVER (ORDER BY order_date, order_id ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS running_revenue FROM orders ORDER BY order_date, order_id;',
+ MOVING:"WITH monthly AS (SELECT DATE_TRUNC('month', order_date) AS month, SUM(amount) AS revenue FROM orders GROUP BY 1) SELECT month, revenue, AVG(revenue) OVER (ORDER BY month ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS three_observed_period_average FROM monthly ORDER BY month;",
+ COHORT:"SELECT DATE_TRUNC('month', signup_date) AS cohort_month, COUNT(*) AS cohort_size FROM customers GROUP BY 1 ORDER BY 1;",
+ RETENTION:"WITH cohorts AS (SELECT customer_id, DATE_TRUNC('month', signup_date) AS cohort_month FROM customers), sizes AS (SELECT cohort_month, COUNT(*) AS cohort_size FROM cohorts GROUP BY 1), activity AS (SELECT c.cohort_month, DATE_TRUNC('month', o.order_date) AS activity_month, COUNT(DISTINCT c.customer_id) AS active_customers FROM cohorts c JOIN orders o USING (customer_id) WHERE o.order_date >= c.cohort_month GROUP BY 1,2) SELECT a.*, s.cohort_size, a.active_customers::DOUBLE / s.cohort_size AS retention FROM activity a JOIN sizes s USING (cohort_month) ORDER BY 1,2;",
+ CHURN:"WITH last_purchase AS (SELECT customer_id, MAX(order_date) AS last_order FROM orders GROUP BY 1) SELECT c.customer_id, l.last_order, CASE WHEN l.last_order IS NULL OR l.last_order < DATE '2026-03-01' - INTERVAL '60 days' THEN 'inactive' ELSE 'active' END AS status FROM customers c LEFT JOIN last_purchase l USING (customer_id);",
+ FUNNEL:'SELECT COUNT(DISTINCT c.customer_id) AS registered_customers, COUNT(DISTINCT o.customer_id) AS customers_with_orders, COUNT(DISTINCT o.customer_id)::DOUBLE / NULLIF(COUNT(DISTINCT c.customer_id), 0) AS registration_to_purchase_rate FROM customers c LEFT JOIN orders o USING (customer_id);',
+ SEGMENT:"WITH spend AS (SELECT customer_id, SUM(amount) AS revenue FROM orders GROUP BY 1) SELECT c.customer_id, COALESCE(s.revenue, 0) AS revenue, CASE WHEN COALESCE(s.revenue, 0) >= 50000 THEN 'High Value' ELSE 'Core' END AS segment FROM customers c LEFT JOIN spend s USING (customer_id);",
+ KPI:'SELECT COUNT(DISTINCT customer_id) AS buyers, SUM(amount) AS revenue, SUM(amount) / NULLIF(COUNT(DISTINCT customer_id), 0) AS revenue_per_buyer FROM orders;',
+ QUALITY:'SELECT customer_id, COUNT(*) AS occurrences FROM customers GROUP BY 1 HAVING COUNT(*) > 1;',
+ PERF:"EXPLAIN SELECT customer_id, SUM(amount) AS revenue FROM orders WHERE order_date >= DATE '2026-01-01' GROUP BY customer_id;",
+ DEBUG:'WITH joined AS (SELECT o.order_id, c.customer_id FROM orders o JOIN customers c USING (customer_id)) SELECT (SELECT COUNT(*) FROM orders) AS source_orders, COUNT(*) AS joined_rows, COUNT(DISTINCT order_id) AS distinct_orders FROM joined;',
+ PROJECT:'WITH revenue AS (SELECT customer_id, SUM(amount) AS revenue FROM orders GROUP BY 1) SELECT c.city, COUNT(*) AS customers, SUM(COALESCE(r.revenue, 0)) AS revenue FROM customers c LEFT JOIN revenue r USING (customer_id) GROUP BY c.city ORDER BY revenue DESC;'
+};
